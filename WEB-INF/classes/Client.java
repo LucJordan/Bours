@@ -3,10 +3,10 @@ package donnee;
 public class Client{
     String idClient;
     String nom ;
-    int argent;
+    float argent;
 	public Client () {}
 
-	public Client ( String idClient, String nom, int argent) {
+	public Client ( String idClient, String nom, float argent) {
 
 		setIdClient(idClient) ;
 
@@ -98,20 +98,20 @@ public class Client{
 
 	}
 
-	public int getArgent() {
+	public float getArgent() {
 
 		return this.argent;
 
 	}
 
-	public void setArgent(int argent) {
+	public void setArgent(float argent) {
 
 		this.argent = argent;
 
 	}
 	public void setArgent(String argent) {
 
-		setArgent((new Integer(argent)).intValue());
+		setArgent((new Integer(argent)).floatValue());
 
 	}
 }

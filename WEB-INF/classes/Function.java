@@ -39,13 +39,14 @@ public class Function{
 		
 		txt += (new Client()).affS((new Function_gen()).select(con,"Client"));
 		txt += (new Brocker()).affS((new Function_gen()).select(con,"Brocker"));
+		txt += (new Brocker()).affS((new Function_gen()).select(con,"Societe"));
 		
 		con.close();
 		return txt;
 	}
 	public String maper() throws Exception {
 		Connection con = (new DBConnection()).getConnnection();
-		Brocker o = new Brocker();
+		Societe o = new Societe();
 		String map = (new Mapping()).createAllInClass(o);
 		con.close();
 		return map;
@@ -57,7 +58,14 @@ public class Function{
 		Formulaire f_Client = new Formulaire();
 		f_Client.init(new Client());
 		html += f_Client.getHTML(new Client(),con);
-		html += f_Client.getHTMLupdate(new Client(),con);
+
+		Formulaire f_Brocker = new Formulaire();
+		f_Brocker.init(new Brocker());
+		html += f_Brocker.getHTML(new Brocker(),con);
+
+		Formulaire f_Societe = new Formulaire();
+		f_Societe.init(new Societe());
+		html += f_Societe.getHTML(new Societe(),con);
 
 		con.close();
 		

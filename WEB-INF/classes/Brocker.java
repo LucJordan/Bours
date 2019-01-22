@@ -3,11 +3,11 @@ package donnee;
 public class Brocker{
     String idBrocker;
     String nom;
-    int pourcentage;
-    int argent;
+    float pourcentage;
+    float argent;
 	public Brocker () {}
 
-	public Brocker ( String idBrocker, String nom, int pourcentage, int argent) {
+	public Brocker ( String idBrocker, String nom, float pourcentage, float argent) {
 
 	setIdBrocker(idBrocker) ;
 
@@ -107,36 +107,36 @@ public class Brocker{
 
 	}
 
-	public int getPourcentage() {
+	public float getPourcentage() {
 
 	return this.pourcentage;
 
 	}
 
-	public void setPourcentage(int pourcentage) {
+	public void setPourcentage(float pourcentage) {
 
 	this.pourcentage = pourcentage;
 
 	}
 	public void setPourcentage(String pourcentage) {
 
-	setPourcentage((new Integer(pourcentage)).intValue());
+	setPourcentage((new Integer(pourcentage)).floatValue());
 
 	}
-	public int getArgent() {
+	public float getArgent() {
 
 	return this.argent;
 
 	}
 
-	public void setArgent(int argent) {
+	public void setArgent(float argent) {
 
 	this.argent = argent;
 
 	}
 	public void setArgent(String argent) {
 	
-	setArgent((new Integer(argent)).intValue());
+	setArgent((new Integer(argent)).floatValue());
 
 	}
 }

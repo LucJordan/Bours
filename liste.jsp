@@ -1,7 +1,7 @@
 <%@page import="tools.*,donnee.*,function_gen.*,connexion.*,java.sql.*,function.*"%>
 
 <%
-	String txt = (new Function()).formuler();
+	String txt = (new Function()).lister();
 %>
 
 <!DOCTYPE HTML>
