@@ -15,7 +15,16 @@
 <body>
 
 	<div class="container">
-		<% out.println((new Function()).getLien()); %>
+		<%
+			if(session.getAttribute("client")==null && session.getAttribute("brocker")==null && session.getAttribute("admin")==null){
+            	response.sendRedirect("ejectee.jsp");
+			}
+			String msg = "<h2>Bienvenu "+(new Function()).getNotNull(session.getAttribute("client"),session.getAttribute("brocker"),session.getAttribute("admin"))+"</h2>";
+			msg += "[" + (new Function()).getTypeSession(session.getAttribute("client"),session.getAttribute("brocker"),session.getAttribute("admin")) + "]";
+			out.println(msg);
+		%>
+
+		<% out.println((new Function()).getLien_session((new Function()).getTypeSession(session.getAttribute("client"),session.getAttribute("brocker"),session.getAttribute("admin")))); %>
 	</div>
 
 	<script src="js/jquery.min.js"></script>

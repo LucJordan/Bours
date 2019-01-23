@@ -230,9 +230,9 @@ public class Function_gen{
 	}
 	public Object[] select(Connection con ,String nt,String col,String val,String col0,String val0)throws Exception{
         String sql = "SELECT * FROM "+nt;
-            sql+=" WHERE "+col+" = '"+val+"' AND "+col0+" = '"+val0+"' ";
+			sql+=" WHERE "+col+" = '"+val+"' AND "+col0+" = '"+val0+"' ";
+		System.out.println(sql);
 		ResultSet rs = con.createStatement().executeQuery(sql);
-		// System.out.println(sql);
 		nt = "donnee."+nt;
 		Class c = Class.forName(nt);
 		Object[] valiny = new Object[0];

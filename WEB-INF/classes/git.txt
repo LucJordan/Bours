@@ -1,0 +1,7 @@
+git clone https://github.com/LucJordan/Bours.git
+
+git add -add
+
+git commit 
+
+git push -m "message"
