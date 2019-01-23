@@ -73,17 +73,17 @@ create table ordre(
 create sequence idOrdre;
 
 create table titre_vendu (
-    id varchar(10) primary key,
+    idTitre_vendu varchar(10) primary key,
     idTitre varchar(10) not null,
     idProprietaire varchar(10) not null,
     foreign key (idTitre) references Titre(idTitre),    
     foreign key (idProprietaire) references Client(idClient)    
 );
 
-create sequence id;
+create sequence idTitre_vendu;
 
 create table transaction (
-    idTransac varchar(10) primary key,
+    idTransaction varchar(10) primary key,
     dateTransac date,
     idOrdreVente varchar(10) not null,
     idOrdreAchat varchar(10) not null,
@@ -93,4 +93,4 @@ create table transaction (
     foreign key (idOrdreAchat) references ordre(idOrdre)
 );
 
-create sequence idTransac;
+create sequence idTransaction;
