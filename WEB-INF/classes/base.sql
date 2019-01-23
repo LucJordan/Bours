@@ -5,6 +5,7 @@
 
 -- sqlplus bours/bours
 
+-- Drop TABLE acceptOrdre;
 -- drop table transaction;
 -- drop sequence idTransaction;
 -- drop table titre_vendu;
@@ -85,10 +86,18 @@ create table transaction (
     dateTransac date,
     idOrdreVente varchar(10) not null,
     idOrdreAchat varchar(10) not null,
-    montantBrocker1 decimal,
-    montantBrocker2 decimal,
+    montantBrockerV decimal,
+    montantBrockerA decimal,
     foreign key (idOrdreVente) references ordre(idOrdre),
     foreign key (idOrdreAchat) references ordre(idOrdre)
 );
 
 create sequence idTransaction;
+
+CREATE TABLE acceptOrdre(
+    idAcceptOrdre varchar(10) primary key,
+    idOrdre varchar(10) ,
+    FOREIGN KEY (idOrdre) REFERENCES Ordre(idOrdre)
+);
+
+-- CREATE view ordreaccepted as select * from ordre where idordre not in (select idordre from acceptOrdre);

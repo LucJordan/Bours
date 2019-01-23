@@ -43,7 +43,7 @@ return "aucun Societe";
 
 }
 
-String res ="" ;
+String res ="Tableau de Societe" ;
 
 res +="<table class=\"table table-bordered\">" ;
 
@@ -119,7 +119,7 @@ this.nbTitre = nbTitre;
 
 }
 
-public void setNbTitre(String nbTitre) {
+public void setNbTitre( String nbTitre) {
 
 setNbTitre((new Integer(nbTitre)).intValue());
 
@@ -135,5 +135,8 @@ public void setIdBrocker(String idBrocker) {
 
 this.idBrocker = idBrocker;
 
+}
+public String getderoul(){
+    return "<option value=\""+getIdSociete()+"\">"+getNom()+"</option>";
 }
 }

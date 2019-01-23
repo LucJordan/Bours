@@ -39,7 +39,7 @@ public class Mapping{
 		res += "<p>if(liste.length&lt=0){</p>";
 		res += "<p>return  \"aucun "+nom+"\";</p>";
 		res += "<p>}</p>";
-		res += "<p>String res =\"\" ; </p>";
+		res += "<p>String res =\"Tableau de "+nom+"\" ; </p>";
 		res += "<p>res +=\"&lttable class=\\\"table table-bordered\\\"&gt\" ; </p>";
 		res += "<p>res +=\"&lttr>\" ; </p>";
 		for(int i=0; i<f.length; i++){
@@ -144,7 +144,22 @@ public class Mapping{
 		res += "<p>public void set"+att+"("+ type + " " + name + ") { </p>";
 		res += "<p>this."+ name + " = " + name + ";</p>";
 		res += "<p> } </p>";
-		
+
+		if(type.compareTo("int")==0){
+			res += "<p>public void set"+att+"( String " + name + ") { </p>";
+			res += "<p>set"+att+"((new Integer(" + name + ")).intValue());</p>";
+			res += "<p> } </p>";
+		}
+		if(type.compareTo("float")==0){
+			res += "<p>public void set"+att+"( String " + name + ") { </p>";
+			res += "<p>set"+att+"((new Integer(" + name + ")).floatValue());</p>";
+			res += "<p> } </p>";
+		}
+		if(type.compareTo("Date")==0){
+			res += "<p>public void set"+att+"( String " + name + ") throws Exception { </p>";
+			res += "<p>set"+att+"( (new Function_date()).stringtodate(" + name + ") );</p>";
+			res += "<p> } </p>";
+		}
 		return res;
 	}
     
