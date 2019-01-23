@@ -6,11 +6,9 @@
 -- sqlplus bours/bours
 
 -- drop table transaction;
--- drop sequence idTransac;
+-- drop sequence idTransaction;
 -- drop table titre_vendu;
--- drop sequence id;
--- drop table promotion;
--- drop sequence idProm;
+-- drop sequence idTitre_vendu;
 -- drop table titre;
 -- drop sequence idTitre;
 -- drop table ordre;
