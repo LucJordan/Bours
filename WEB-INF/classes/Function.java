@@ -39,6 +39,7 @@ public class Function{
         txt += "<p><a href=\"index.jsp\">Accueil</a></p>";
 		txt += "<p><a href=\"map.jsp\">Map</a></p>";
 		txt += "<p><a href=\"liste.jsp\">Liste</a></p>";
+        txt += "<p><a href=\"cotation.jsp\">Tableau de cotation</a></p>";
         txt += getLien("formulaire");
 		txt += "<p><a href=\"deco.jsp\">deconnection</a></p>";
         return txt;
@@ -49,6 +50,7 @@ public class Function{
 		txt += "<p><a href=\"form_ordre.jsp?type=0\">acheter</a></p>";
 		txt += "<p><a href=\"form_ordre.jsp?type=1\">vendre</a></p>";
 		txt += "<p><a href=\"deco.jsp\">deconnection</a></p>";
+        txt += "<p><a href=\"cotation.jsp\">Tableau de cotation</a></p>";
         return txt;
 	}
 	public String getTitreOrdre(String type){
@@ -61,6 +63,8 @@ public class Function{
         String txt = "";
         txt += "<p><a href=\"index.jsp\">Accueil</a></p>";
         txt += "<p><a href=\"ordre_confirm.jsp\">Ordres a confirmer</a></p>";
+        txt += "<p><a href=\"ordre_conclure.jsp\">Ordres a conclure</a></p>";
+        txt += "<p><a href=\"cotation.jsp\">Tableau de cotation</a></p>";
 		txt += "<p><a href=\"deco.jsp\">deconnection</a></p>";
         return txt;
 	}
@@ -327,15 +331,14 @@ public class Function{
 	public void check_before_insert(Object o,Connection con) throws Exception {
 		if(o.getClass().getName().equals("donnee.Ordre")){
 			Ordre sujet = (Ordre)o;
-			if(o.getType()==){
-
+			if(sujet.getType()==1){
+				Object[] objs = (new Function_gen()).select(con, "Info_titre", "idProprietaire", sujet.getIdClient(),"idSociete",sujet.getIdSociete());
+				Info_titre[] its = new Info_titre[objs.length];
+				for(int i=0; i<objs.length; i++){
+					its[i] = (Info_titre)objs[i];
+				}
+				check_qtt_vendu(its, sujet.getNbTitre());
 			}
-			Object[] objs = (new Function_gen()).select(con, "Info_titre", "idProprietaire", sujet.getIdClient(),"idSociete",sujet.getIdSociete());
-			Info_titre[] its = new Info_titre[objs.length];
-			for(int i=0; i<objs.length; i++){
-				its[i] = (Info_titre)objs[i];
-			}
-			check_qtt_vendu(its, sujet.getNbTitre());
 		}
 	}
 	public void check_qtt_vendu(Info_titre[] its, int nbTitre) throws Exception {
@@ -349,12 +352,16 @@ public class Function{
 	public String lister_Brocker(String idBrocker) throws Exception {
 		Connection con = (new DBConnection()).getConnnection();
 		String txt = "";
-		
-		txt += (new Ordrenotaccepted()).affS((new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker));
-		txt += (new Ordrenotaccepted()).affSpec((new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker),con);
+		txt += (new Ordrenotaccepted()).affSpecA((new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker,"type","0"),con);
+		txt += (new Ordrenotaccepted()).affSpecV((new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker,"type","1"),con);
 
 		con.close();
 		return txt;
+	}
+	public String aConclure(String idBrocker,Connection con) throws Exception {
+		Object[] mes_ordre_A = (new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker,"type","0");
+		Object[] mes_ordre_V = (new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker,"type","1");
+		return "";
 	}
 	public void confirmOrdre(String idOrdre) throws Exception {
 		DBConnection dbh =  new DBConnection();
@@ -363,5 +370,69 @@ public class Function{
 		(new Function_gen()).insert(con, ao, "AcceptOrdre");
 		con.close();
 	}
+	public String getTabCotation() throws Exception {
+		Connection con = new DBConnection().getConnnection();
+		String res = getTabCotation(con);
+		con.close();
+		return res;
+	}
+	public String getTabCotation(Connection con) throws Exception {
+		String html = "";
+		html += "<table class=\"table table-bordered\">";
+			html += "<tr>";
+				html += "<th>Societe</th>";
+				html += "<th>Achat</th>";
+				html += "<th>Vente</th>";
+			html += "</tr>";
+			Object[] listedesociete = (new Function_gen()).select(con, "Societe");
+			for(int i=0; i<listedesociete.length; i++){
+			Societe soc = (Societe)listedesociete[i];
+			html += "<tr>";
+				html += "<td>"+soc.getNom()+"</td>";
+				html += "<td>";
+					html += "<table class=\"table table-bordered\">";
+						html += "<tr>";
+							html += "<th>prix unitaire</th>";
+							html += "<th>nombre de titre</th>";
+							html += "<th>brocker</th>";
+							html += "<th>Client</th>";
+						html += "</tr>";
+						Object[] listeachat = (new Function_gen()).select(con, "Ordreaccepted", "idSociete", soc.getIdSociete(),"type","0");
+						for(int j=0; j<listeachat.length; j++){
+						Ordreaccepted oa = (Ordreaccepted)listeachat[j];
+						html += "<tr>";
+							html += "<td>"+oa.getPrixUnitaire()+"</td>";
+							html += "<td>"+oa.getNbTitre()+"</td>";
+							html += "<td>"+oa.getIdBrocker()+"</td>";
+							html += "<td>"+oa.getIdClient()+"</td>";
+						html += "</tr>";
+						}
+					html += "</table>";
+				html += "</td>";
 
+				html += "<td>";
+				html += "<table class=\"table table-bordered\">";
+					html += "<tr>";
+						html += "<th>prix unitaire</th>";
+						html += "<th>nombre de titre</th>";
+						html += "<th>brocker</th>";
+						html += "<th>Client</th>";
+					html += "</tr>";
+					Object[] listevente = (new Function_gen()).select(con, "Ordreaccepted", "idSociete", soc.getIdSociete(),"type","1");
+					for(int j=0; j<listevente.length; j++){
+					Ordreaccepted ov = (Ordreaccepted)listevente[j];
+					html += "<tr>";
+						html += "<td>"+ov.getPrixUnitaire()+"</td>";
+						html += "<td>"+ov.getNbTitre()+"</td>";
+						html += "<td>"+ov.getIdBrocker()+"</td>";
+						html += "<td>"+ov.getIdClient()+"</td>";
+					html += "</tr>";
+					}
+				html += "</table>";
+			html += "</td>";
+			html += "</tr>";
+			}
+		html += "</table>";
+		return html;
+	}
 }

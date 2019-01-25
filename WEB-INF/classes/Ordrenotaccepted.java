@@ -13,15 +13,15 @@ public class Ordrenotaccepted extends Ordre {
     public Ordrenotaccepted(){
         super();
     }
-    public String affSpec(Object[] liste,Connection con) throws Exception {
+    public String affSpecV(Object[] liste,Connection con) throws Exception {
     
         if(liste.length<=0){
         
-        return "aucun Ordre vente a confirmer";
+        return "<p>aucun Ordre vente a confirmer</p>";
         
         }
         
-        String res ="les ordres de ventes" ;
+        String res ="<p>les ordres de vente</p>" ;
         
         res +="<table class=\"table table-bordered\">" ;
         
@@ -71,4 +71,62 @@ public class Ordrenotaccepted extends Ordre {
         return res;
         
         }
+        public String affSpecA(Object[] liste,Connection con) throws Exception {
+    
+            if(liste.length<=0){
+            
+            return "<p>aucun Ordre achat a confirmer</p>";
+            
+            }
+            
+            String res ="<p>les ordres d' achat</p>" ;
+            
+            res +="<table class=\"table table-bordered\">" ;
+            
+            res +="<tr>" ;
+                    
+            res +=" <th>Date d'achat</th>";        
+    
+            res +=" <th>Client</th>";
+    
+            res +=" <th>Societe</th>";
+            
+            res +=" <th>prix unitaire</th>";
+                    
+            res +=" <th>nombre de titre a acheter</th>";
+    
+            res +=" <th></th>";
+                                    
+            res +="</tr>" ;
+            
+            for(int i=0; i<liste.length; i++){
+            
+            Ordre x = (Ordre)liste[i];
+            
+            res +="<tr>" ;
+            
+            res += "<td>"+(new Function_date()).aff(x.getDates())+"</td>";
+            
+            Client c = (Client)(new Function_gen()).selectbyId(con, "Client", "idClient", x.getIdClient());
+            res += "<td>"+c.getNom()+"</td>";
+    
+            Societe soc = (Societe)(new Function_gen()).selectbyId(con, "Societe", "idSociete", x.getIdSociete());
+            res += "<td>"+soc.getNom()+"</td>";
+            
+            res += "<td>"+x.getPrixUnitaire()+"</td>";
+            
+            
+            res += "<td>"+x.getNbTitre()+"</td>";
+    
+            res += "<td><a href=\"confirm_ordre.jsp?idOrdre="+x.getIdOrdre()+"\">confirmer</a></td>";
+                            
+            res +="</tr>" ;
+            
+            }
+            
+            res +="</table>" ;
+            
+            return res;
+            
+            }
 }
