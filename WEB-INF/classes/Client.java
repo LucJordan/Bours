@@ -114,5 +114,9 @@ public class Client{
 	
 	setArgent((new Integer(argent)).floatValue());
 	
-	} 
+	}
+	public String getderoul(){
+		return "<option value=\""+getIdClient()+"\">"+getNom()+"</option>";
+	}
+
 }

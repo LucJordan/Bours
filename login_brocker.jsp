@@ -6,6 +6,7 @@
         Boolean x = (new Function()).check_log_brocker(request.getParameter("login"),request.getParameter("pwd"));
         if(x){
             session.setAttribute("brocker",request.getParameter("login"));
+            session.setAttribute("brocker_id",request.getParameter("pwd"));
             response.sendRedirect("index.jsp");
         }
     }catch(Exception e){

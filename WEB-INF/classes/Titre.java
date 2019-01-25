@@ -115,4 +115,7 @@ public void setPrix( String prix) {
 setPrix((new Integer(prix)).floatValue());
 
 }
+public String getderoul(){
+    return "<option value=\""+getIdTitre()+"\">titre:"+getIdTitre()+" ("+getPrix()+")</option>";
+}
 }

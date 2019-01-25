@@ -14,7 +14,7 @@ public class Ordre{
     Date dates;
     public Ordre () {}
 
-    public Ordre ( String idOrdre, String idSociete, float prixUnitaire, String idClient, int nbTitre, String idBrocker, int type, Date dates) {
+    public Ordre ( String idOrdre, String idSociete, float prixUnitaire, String idClient, int nbTitre, String idBrocker, int type, Date dates) throws Exception {
     
     setIdOrdre(idOrdre) ;
     
@@ -182,13 +182,16 @@ public class Ordre{
     
     }
     
-    public void setNbTitre(int nbTitre) {
+    public void setNbTitre(int nbTitre) throws Exception {
     
+        if(nbTitre<1){
+            throw new Exception("le nombre de titre ne peut pas etre inferieur a 1");
+        }
     this.nbTitre = nbTitre;
     
     }
     
-    public void setNbTitre( String nbTitre) {
+    public void setNbTitre( String nbTitre) throws Exception {
     
     setNbTitre((new Integer(nbTitre)).intValue());
     
@@ -240,5 +243,8 @@ public class Ordre{
     
     setDates( (new Function_date()).stringtodate(dates) );
     
+    }
+    public String getderoul(){
+        return "<option value=\""+getIdOrdre()+"\">"+getIdOrdre()+"</option>";
     }
 }

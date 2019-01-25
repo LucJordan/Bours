@@ -6,6 +6,7 @@
         Boolean x = (new Function()).check_log_client(request.getParameter("login"),request.getParameter("pwd"));
         if(x){
             session.setAttribute("client",request.getParameter("login"));
+            session.setAttribute("client_id",request.getParameter("pwd"));
             response.sendRedirect("index.jsp");
         }
     }catch(Exception e){

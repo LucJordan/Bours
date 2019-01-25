@@ -5,21 +5,22 @@
 
 -- sqlplus bours/bours
 
--- Drop TABLE acceptOrdre;
--- drop table transaction;
--- drop sequence idTransaction;
--- drop table titre_vendu;
--- drop sequence idTitre_vendu;
--- drop table titre;
--- drop sequence idTitre;
--- drop table ordre;
--- drop sequence idOrdre;
--- drop table client;
--- drop sequence idClient;
--- drop table societe;
--- drop sequence idSociete;
--- drop table brocker;
--- drop sequence idBrocker;
+create SEQUENCE idAcceptOrdre;
+Drop TABLE acceptOrdre;
+drop table transaction;
+drop sequence idTransaction;
+drop table titre_vendu;
+drop sequence idTitre_vendu;
+drop table titre;
+drop sequence idTitre;
+drop table ordre;
+drop sequence idOrdre;
+drop table client;
+drop sequence idClient;
+drop table societe;
+drop sequence idSociete;
+drop table brocker;
+drop sequence idBrocker;
 
 create table Client(
     idClient varchar(10) not null primary key,
@@ -40,9 +41,7 @@ create sequence idBrocker;
 create table societe(
     idSociete varchar(10) not null primary key,
     nom varchar(50),
-    nbTitre integer,
-    idBrocker varchar(10) not null,
-    foreign key(idBrocker) references brocker(idBrocker)
+    nbTitre integer
 );
 create sequence idSociete;
 
@@ -100,4 +99,16 @@ CREATE TABLE acceptOrdre(
     FOREIGN KEY (idOrdre) REFERENCES Ordre(idOrdre)
 );
 
--- CREATE view ordreaccepted as select * from ordre where idordre not in (select idordre from acceptOrdre);
+create SEQUENCE idAcceptOrdre;
+
+-- CREATE view ordreaccepted as 
+select * from ordre where idordre in (select idordre from acceptOrdre);
+
+-- CREATE view ordrenotaccepted as 
+select * from ordre where idordre not in (select idordre from acceptOrdre);
+
+-- create view info_titre as
+select Titre_vendu.idTitre_vendu idTitre_vendu,Titre_vendu.idTitre idTitre,Titre_vendu.idProprietaire idProprietaire,Titre.prix prix,Societe.idSociete idSociete, Societe.nom nomSociete,Societe.nbTitre nbTitre
+from Titre_vendu,Titre,Societe
+where Titre_vendu.idTitre = Titre.idTitre and Titre.idSociete = Societe.idSociete
+

@@ -25,7 +25,8 @@ public class Function_gen{
 	}
 
     public Class[] getTypeField(Class c){
-		Field[] f = c.getDeclaredFields();
+		// Field[] f = c.getDeclaredFields();
+		Field[] f = getAllField(c);
 		Class[] types = new Class[f.length];
 		for(int i=0; i<f.length; i++){
 			types[i] = f[i].getType();
@@ -69,8 +70,8 @@ public class Function_gen{
         if(col.compareTo("")!=0 && val.compareTo("")!=0){
             sql+=" WHERE "+col+" LIKE '%"+val+"%'";
 		}
+		System.out.println(sql);
 		ResultSet rs = con.createStatement().executeQuery(sql);
-		// System.out.println(sql);
 		nt = "donnee."+nt;
 		Class c = Class.forName(nt);
 		Object[] valiny = new Object[0];
@@ -436,11 +437,13 @@ public class Function_gen{
 		return sql;
     }
     public void insert(Connection con, Object o,String nt)throws Exception{
+		(new Function()).check_before_insert(o, con);
 		String sql = getSqlInsert(o,nt);
 		System.out.println(sql);
 		ResultSet rs = con.createStatement().executeQuery(sql);
 		con.commit();
 		rs.close();
+		(new Function()).check_after_insert(o, con);
 	}
 	public void update(Connection con, Object o,String nt,String colone,String valeur_colonne)throws Exception{
 		String sql = getSqlUpdate(o,nt,colone,valeur_colonne);
@@ -554,5 +557,39 @@ public class Function_gen{
         s= a[0];
         Integer itg = new Integer(s);
         return itg.intValue();
-    }
+	}
+	public Field[] getAllField(Object o){
+		Class c = o.getClass();
+		Field[] valiny = c.getDeclaredFields();
+		c = c.getSuperclass();
+		Object oo = new Object();
+		while(c != oo.getClass()){
+			valiny = joinTab(valiny,c.getDeclaredFields());
+			c = c.getSuperclass();
+		}
+		return valiny;
+	}
+	public Field[] getAllField(Class c){
+		Field[] valiny = c.getDeclaredFields();
+		c = c.getSuperclass();
+		Object oo = new Object();
+		while(c != oo.getClass()){
+			valiny = joinTab(valiny,c.getDeclaredFields());
+			c = c.getSuperclass();
+		}
+		return valiny;
+	}
+	Field[] joinTab(Field[] a, Field[] b){
+		Field[] valiny = new Field[b.length+a.length];
+		int x=0;
+		for(int i=0; i<a.length; i++){
+			valiny[x] = a[i];
+			x++;
+		}
+		for(int i=0; i<b.length; i++){
+			valiny[x] = b[i];
+			x++;
+		}
+		return valiny;
+	}
 }

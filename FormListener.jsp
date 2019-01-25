@@ -20,11 +20,18 @@ try{
 
 }
 catch(java.lang.reflect.InvocationTargetException e){
-  out.println("error :"+e.getCause().getMessage());
+  if(e.getCause().getMessage().indexOf("For input string:")!=-1){
+    String msg = "veuillez remplir tout les champs ou les donnes entree sont incompatibles";
+    msg += (new Function()).boutongoback();
+    out.println(msg);
+  }
+  else{
+    out.println(e.getCause().getMessage());
+  }
   //throw e;
 }
 catch(Exception e){
-  out.println("error :"+e.getMessage());
+  out.println(e.getMessage());
   //throw e;
 }
 finally{

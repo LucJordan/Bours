@@ -46,12 +46,21 @@ public class Function{
 	public String getLienClient(){
         String txt = "";
         txt += "<p><a href=\"index.jsp\">Accueil</a></p>";
+		txt += "<p><a href=\"form_ordre.jsp?type=0\">acheter</a></p>";
+		txt += "<p><a href=\"form_ordre.jsp?type=1\">vendre</a></p>";
 		txt += "<p><a href=\"deco.jsp\">deconnection</a></p>";
         return txt;
+	}
+	public String getTitreOrdre(String type){
+		if(type.equals("0")){
+			return "Formulaire d'achat";
+		}
+		return "Formulaire de vente";
 	}
 	public String getLienBrocker(){
         String txt = "";
         txt += "<p><a href=\"index.jsp\">Accueil</a></p>";
+        txt += "<p><a href=\"ordre_confirm.jsp\">Ordres a confirmer</a></p>";
 		txt += "<p><a href=\"deco.jsp\">deconnection</a></p>";
         return txt;
 	}
@@ -71,15 +80,19 @@ public class Function{
 		txt += (new Societe()).affS((new Function_gen()).select(con,"Societe"));
 		txt += (new Titre()).affS((new Function_gen()).select(con,"Titre"));
 		txt += (new Ordre()).affS((new Function_gen()).select(con,"Ordre"));
+		txt += (new Ordreaccepted()).affS((new Function_gen()).select(con,"Ordreaccepted"));
+		txt += (new Ordrenotaccepted()).affS((new Function_gen()).select(con,"Ordrenotaccepted"));
 		txt += (new Titre_vendu()).affS((new Function_gen()).select(con,"Titre_vendu"));
 		txt += (new Transaction()).affS((new Function_gen()).select(con,"Transaction"));
+		txt += (new Info_titre()).affS((new Function_gen()).select(con,"Info_titre"));
+		txt += (new Ordreaccepted()).affS((new Function_gen()).select(con,"Ordreaccepted"));
 		
 		con.close();
 		return txt;
 	}
 	public String maper() throws Exception {
 		Connection con = (new DBConnection()).getConnnection();
-		Transaction o = new Transaction();
+		AcceptOrdre o = new AcceptOrdre();
 		String map = (new Mapping()).createAllInClass(o);
 		con.close();
 		return map;
@@ -105,9 +118,6 @@ public class Function{
 		f_Societe.getChamp("idSociete").setDefault("concat('s_',idSociete.nextVal)");
 		f_Societe.getChamp("idSociete").setVisible(false);
 		f_Societe.getChamp("nbTitre").setLibele("nombre de titre");
-		f_Societe.getChamp("idBrocker").setDeroulante(true);
-		f_Societe.getChamp("idBrocker").setListe(new Brocker());
-		f_Societe.getChamp("idBrocker").setLibele("Brocker");
 		html += f_Societe.getHTML(new Societe(),con);
 
 		Formulaire f_Titre = new Formulaire();
@@ -123,24 +133,81 @@ public class Function{
 		f_Ordre.init(new Ordre());
 		f_Ordre.getChamp("idOrdre").setDefault("concat('o_',idOrdre.nextVal)");
 		f_Ordre.getChamp("idOrdre").setVisible(false);
+		f_Ordre.getChamp("idSociete").setLibele("Societe");
+		f_Ordre.getChamp("idSociete").setDeroulante(true);
+		f_Ordre.getChamp("idSociete").setListe(new Societe());
+		f_Ordre.getChamp("idClient").setLibele("Client");
+		f_Ordre.getChamp("idClient").setDeroulante(true);
+		f_Ordre.getChamp("idClient").setListe(new Client());
+		f_Ordre.getChamp("idBrocker").setLibele("Brocker");
+		f_Ordre.getChamp("idBrocker").setDeroulante(true);
+		f_Ordre.getChamp("idBrocker").setListe(new Brocker());
+		f_Ordre.getChamp("prixUnitaire").setLibele("prix unitaire");
+		f_Ordre.getChamp("nbTitre").setLibele("nombre de titre");
+		f_Ordre.getChamp("dates").setLibele("Date");
 		html += f_Ordre.getHTML(new Ordre(),con);
 
 		Formulaire f_Titre_vendu = new Formulaire();
 		f_Titre_vendu.init(new Titre_vendu());
 		f_Titre_vendu.getChamp("idTitre_vendu").setDefault("concat('tiv_',idTitre_vendu.nextVal)");
 		f_Titre_vendu.getChamp("idTitre_vendu").setVisible(false);
+		f_Titre_vendu.getChamp("idTitre").setDeroulante(true);
+		f_Titre_vendu.getChamp("idTitre").setListe(new Titre());
+		f_Titre_vendu.getChamp("idTitre").setLibele("titre");
+		f_Titre_vendu.getChamp("idProprietaire").setDeroulante(true);
+		f_Titre_vendu.getChamp("idProprietaire").setListe(new Client());
+		f_Titre_vendu.getChamp("idProprietaire").setLibele("Proprietaire");
 		html += f_Titre_vendu.getHTML(new Titre_vendu(),con);
 
 		Formulaire f_Transaction = new Formulaire();
 		f_Transaction.init(new Transaction());
 		f_Transaction.getChamp("idTransaction").setDefault("concat('tr_',idTransaction.nextVal)");
 		f_Transaction.getChamp("idTransaction").setVisible(false);
+		f_Transaction.getChamp("dateTransac").setLibele("date de transaction");
+		f_Transaction.getChamp("idOrdreVente").setLibele("ordre de vente");
+		f_Transaction.getChamp("idOrdreVente").setDeroulante(true);
+		f_Transaction.getChamp("idOrdreVente").setListe(new Ordre());
+		f_Transaction.getChamp("idOrdreAchat").setLibele("ordre d'achat");
+		f_Transaction.getChamp("idOrdreAchat").setDeroulante(true);
+		f_Transaction.getChamp("idOrdreAchat").setListe(new Ordre());
+		f_Transaction.getChamp("montantBrockerV").setLibele("montant du brocker vendeur");
+		f_Transaction.getChamp("montantBrockerA").setLibele("montant du brocker acheteur");
 		html += f_Transaction.getHTML(new Transaction(),con);
+
+		Formulaire f_AcceptOrdre = new Formulaire();
+		f_AcceptOrdre.init(new AcceptOrdre());
+		html += f_AcceptOrdre.getHTML(new AcceptOrdre(),con);
 
 		con.close();
 		
 		return html;
 	}
+
+	public String getFormulaireOrdre(String idc,String type) throws Exception {
+		Connection con = (new DBConnection()).getConnnection();
+		String html = "";
+		Formulaire f_Ordre = new Formulaire();
+		f_Ordre.init(new Ordre());
+		f_Ordre.getChamp("idOrdre").setDefault("concat('o_',idOrdre.nextVal)");
+		f_Ordre.getChamp("idOrdre").setVisible(false);
+		f_Ordre.getChamp("idSociete").setLibele("Societe");
+		f_Ordre.getChamp("idSociete").setDeroulante(true);
+		f_Ordre.getChamp("idSociete").setListe(new Societe());
+		f_Ordre.getChamp("idClient").setDefault(idc);
+		f_Ordre.getChamp("idClient").setVisible(false);
+		f_Ordre.getChamp("idBrocker").setLibele("Brocker");
+		f_Ordre.getChamp("idBrocker").setDeroulante(true);
+		f_Ordre.getChamp("idBrocker").setListe(new Brocker());
+		f_Ordre.getChamp("prixUnitaire").setLibele("prix unitaire");
+		f_Ordre.getChamp("nbTitre").setLibele("nombre de titre");
+		f_Ordre.getChamp("dates").setLibele("Date");
+		f_Ordre.getChamp("type").setDefault(type);
+		f_Ordre.getChamp("type").setVisible(false);
+		html += f_Ordre.getHTML(new Ordre(),con);
+		con.close();
+		return html;
+	}
+
 	public String get_log_client(){
 		String html = "";
 
@@ -257,4 +324,44 @@ public class Function{
 		}
 		return "admin";
 	}
+	public void check_before_insert(Object o,Connection con) throws Exception {
+		if(o.getClass().getName().equals("donnee.Ordre")){
+			Ordre sujet = (Ordre)o;
+			if(o.getType()==){
+
+			}
+			Object[] objs = (new Function_gen()).select(con, "Info_titre", "idProprietaire", sujet.getIdClient(),"idSociete",sujet.getIdSociete());
+			Info_titre[] its = new Info_titre[objs.length];
+			for(int i=0; i<objs.length; i++){
+				its[i] = (Info_titre)objs[i];
+			}
+			check_qtt_vendu(its, sujet.getNbTitre());
+		}
+	}
+	public void check_qtt_vendu(Info_titre[] its, int nbTitre) throws Exception {
+		if( nbTitre > its.length){
+			throw new Exception("vous n'avez pas assez de titre dans cette societe");
+		}
+	}
+    public void check_after_insert(Object o,Connection con) throws Exception {
+    
+	}
+	public String lister_Brocker(String idBrocker) throws Exception {
+		Connection con = (new DBConnection()).getConnnection();
+		String txt = "";
+		
+		txt += (new Ordrenotaccepted()).affS((new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker));
+		txt += (new Ordrenotaccepted()).affSpec((new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker),con);
+
+		con.close();
+		return txt;
+	}
+	public void confirmOrdre(String idOrdre) throws Exception {
+		DBConnection dbh =  new DBConnection();
+		Connection con = dbh.getConnnection();
+		AcceptOrdre ao = new AcceptOrdre("concat('ao_',idAcceptordre.nextVal)",idOrdre);
+		(new Function_gen()).insert(con, ao, "AcceptOrdre");
+		con.close();
+	}
+
 }
