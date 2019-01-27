@@ -189,6 +189,46 @@ public class Function_gen{
 		rs.close();
 		return valiny;
 	}
+	public Object[] selectnot(Connection con ,String nt,String col,String val)throws Exception{
+        String sql = "SELECT * FROM "+nt;
+            sql+=" WHERE "+col+" != '"+val+"'";
+		ResultSet rs = con.createStatement().executeQuery(sql);
+		
+		nt = "donnee."+nt;
+		Class c = Class.forName(nt);
+		Object[] valiny = new Object[0];
+		int nbCol = rs.getMetaData().getColumnCount();
+		Class[] types = getTypeField(c);
+		Constructor constr = c.getConstructor(types);
+		while(rs.next()){
+			// System.out.println("\n ");
+			Object[] lesValAtt = new Object[nbCol];
+			for(int i=0; i<nbCol; i++){
+				String withGet = NameString(types[i].getName());
+				if(withGet.equals("int")){
+					lesValAtt[i]=rs.getInt(i+1);
+				}
+				if(withGet.equals("String")){
+					lesValAtt[i]=rs.getString(i+1);
+				}
+				if(withGet.equals("double")){
+					lesValAtt[i]=rs.getDouble(i+1);
+				}
+				if(withGet.equals("float")){
+					lesValAtt[i]=rs.getFloat(i+1);
+				}
+				if(withGet.equals("Date")){
+					lesValAtt[i]=rs.getDate(i+1);
+				}
+				//System.out.println("valeur "+lesValAtt[i]);
+			}
+			//System.out.println("taille"+lesValAtt.length);
+			Object o = constr.newInstance(lesValAtt);
+			valiny = addObj(valiny,o);
+		}
+		rs.close();
+		return valiny;
+	}
 	public Object[] select(Connection con ,String nt,String col,String val,String col0,String val0,String col1,String val1)throws Exception{
         String sql = "SELECT * FROM "+nt;
             sql+=" WHERE "+col+" = '"+val+"' AND "+col0+" = '"+val0+"' AND "+col1+" = '"+val1+"'";

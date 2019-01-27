@@ -1,7 +1,7 @@
 <%@page import="tools.*,donnee.*,function_gen.*,connexion.*,java.sql.*,function.*"%>
 
 <%
-	String txt = (new Function()).lister_Brocker((String)session.getAttribute("brocker_id"));
+	String txt = (new Function()).aConclure((String)session.getAttribute("brocker_id"));
 %>
 
 <!DOCTYPE HTML>
@@ -11,7 +11,7 @@
 	<meta name="viewport" width="device-width, initial-scale=1.0">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="main.css" rel="stylesheet" type="text/css">
-	<title>Liste</title>
+	<title>A conclure</title>
 </head>
 <body>
 

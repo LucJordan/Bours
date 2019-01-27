@@ -358,10 +358,63 @@ public class Function{
 		con.close();
 		return txt;
 	}
+	public String aConclure(String idBrocker) throws Exception {
+		Connection con = (new DBConnection()).getConnnection();
+		String res = aConclure(idBrocker,con);
+		con.close();
+		return res;
+	}
 	public String aConclure(String idBrocker,Connection con) throws Exception {
-		Object[] mes_ordre_A = (new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker,"type","0");
-		Object[] mes_ordre_V = (new Function_gen()).select(con,"Ordrenotaccepted","idBrocker",idBrocker,"type","1");
-		return "";
+		Object[] mes_ordre_A = (new Function_gen()).select(con,"Ordreaccepted","idBrocker",idBrocker,"type","0");
+		Object[] mes_ordre_V = (new Function_gen()).select(con,"Ordreaccepted","idBrocker",idBrocker,"type","1");
+		// Object[] ordre_autre = (new Function_gen()).selectnot(con, "Ordreaccepted", "IDBROCKER", idBrocker);
+		Object[] ordre_autre = (new Function_gen()).select(con, "Ordreaccepted");
+		String res = "";
+
+		res += "<table class=\"table table-bordered\">";
+			res += "<tr>";
+				res += "<th>vos achats</th>";
+				res += "<th>Proposition</th>";
+			res += "</tr>";
+			for(int i=0; i<mes_ordre_A.length; i++){
+				res += "<tr>";
+					Ordre o = (Ordre)mes_ordre_A[i];
+					res += "<td>"+o.getIdOrdre()+": vous voulez acheter "+o.getNbTitre()+" titre de la societe "+o.getIdSociete()+" appartenant au client "+o.getIdClient()+" prix unitaire= "+o.getPrixUnitaire()+" le "+o.getDates()+"</td>";
+					res += "<td>";
+						for(int j=0; j<ordre_autre.length; j++){
+							Ordre o_autre = (Ordre)ordre_autre[j];
+							if(o_autre.getIdSociete().equals(o.getIdSociete()) && o_autre.getType()!=o.getType()){
+								res += "<p>"+o_autre.getIdOrdre()+": "+o_autre.getIdBrocker()+" veut vendre "+o_autre.getNbTitre()+" titre de la societe "+o_autre.getIdSociete()+" appartenant au client "+o_autre.getIdClient()+" prix unitaire= "+o_autre.getPrixUnitaire()+" le "+o_autre.getDates()+"</p>";
+								res += "<p><a href=\"conclure_ordre.jsp?idOrdreProposition="+o_autre.getIdOrdre()+"&idMyOrdre="+o.getIdOrdre()+"\">conclure</a></p>";
+							}
+						}
+					res += "</td>";
+				res += "</tr>";
+			}
+		res += "</table>";
+
+		res += "<table class=\"table table-bordered\">";
+			res += "<tr>";
+				res += "<th>vos ventes</th>";
+				res += "<th>Proposition</th>";
+			res += "</tr>";
+			for(int i=0; i<mes_ordre_V.length; i++){
+				res += "<tr>";
+					Ordre o = (Ordre)mes_ordre_V[i];
+					res += "<td>"+o.getIdOrdre()+": vous voulez vendre "+o.getNbTitre()+" titre de la societe "+o.getIdSociete()+" appartenant au client "+o.getIdClient()+" prix unitaire= "+o.getPrixUnitaire()+" le "+o.getDates()+"</td>";
+					res += "<td>";
+						for(int j=0; j<ordre_autre.length; j++){
+							Ordre o_autre = (Ordre)ordre_autre[j];
+							if(o_autre.getIdSociete().equals(o.getIdSociete()) && o_autre.getType()!=o.getType()){
+								res += "<p>"+o_autre.getIdOrdre()+": "+o_autre.getIdBrocker()+" veut acheter "+o_autre.getNbTitre()+" titre de la societe "+o_autre.getIdSociete()+" appartenant au client "+o_autre.getIdClient()+" prix unitaire= "+o_autre.getPrixUnitaire()+" le "+o_autre.getDates()+"</p>";
+								res += "<p><a href=\"conclure_ordre.jsp?idOrdreProposition="+o_autre.getIdOrdre()+"&idMyOrdre="+o.getIdOrdre()+"\">conclure</a></p>";
+							}
+						}
+					res += "</td>";
+				res += "</tr>";
+			}
+		res += "</table>";
+		return res;
 	}
 	public void confirmOrdre(String idOrdre) throws Exception {
 		DBConnection dbh =  new DBConnection();
