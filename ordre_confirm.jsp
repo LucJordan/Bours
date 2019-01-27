@@ -17,7 +17,7 @@
 
 	<div class="container">
 		<% out.println(txt); %>
-		<% out.println((new Function()).getLien()); %>
+		<% out.println((new Function()).getLien_session((new Function()).getTypeSession(session.getAttribute("client"),session.getAttribute("brocker"),session.getAttribute("admin")))); %>
 	</div>
 
 	<script src="js/jquery.min.js"></script>

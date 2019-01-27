@@ -1,5 +1,9 @@
 package donnee;
 
+import tools.*;
+import function_gen.*;
+import java.sql.Connection;
+
 public class Titre_vendu {
     String idTitre_vendu;
     String idTitre;
@@ -108,5 +112,9 @@ public void setIdProprietaire(String idProprietaire) {
 
 this.idProprietaire = idProprietaire;
 
+}
+public void updateProprio(Connection con,String idproprio) throws Exception {
+    new Function_gen().update(con, this,"Titre_vendu","idProprietaire,idTitre_vendu",idproprio+","+getIdTitre_vendu());
+    System.out.println("_____proprietaire de titre changee_____");
 }
 }

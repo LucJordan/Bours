@@ -112,3 +112,16 @@ select Titre_vendu.idTitre_vendu idTitre_vendu,Titre_vendu.idTitre idTitre,Titre
 from Titre_vendu,Titre,Societe
 where Titre_vendu.idTitre = Titre.idTitre and Titre.idSociete = Societe.idSociete
 
+DROP table ordreconclu;
+
+create table ordreconclu(
+    idOrdreconclu VARCHAR(10) PRIMARY KEY,
+    idBrocker VARCHAR(10),
+    idOrdre VARCHAR(10),
+    FOREIGN KEY (idBrocker) REFERENCES Brocker(idBrocker),
+    FOREIGN KEY (idOrdre) REFERENCES Ordre(idOrdre)
+);
+
+drop sequence idOrdreconclu;
+
+create sequence idOrdreconclu;

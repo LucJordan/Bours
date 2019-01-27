@@ -460,6 +460,9 @@ public class Function_gen{
 				sql = sql+val;
             }
 		}
+		if(colone==null || colone.equals("")){
+			return sql;
+		}
 		String[] tab_colone = colone.split(",");
 		String[] tab_valeur_colonne = valeur_colonne.split(",");
 		if(tab_colone.length != tab_valeur_colonne.length){

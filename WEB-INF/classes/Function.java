@@ -84,19 +84,17 @@ public class Function{
 		txt += (new Societe()).affS((new Function_gen()).select(con,"Societe"));
 		txt += (new Titre()).affS((new Function_gen()).select(con,"Titre"));
 		txt += (new Ordre()).affS((new Function_gen()).select(con,"Ordre"));
-		txt += (new Ordreaccepted()).affS((new Function_gen()).select(con,"Ordreaccepted"));
-		txt += (new Ordrenotaccepted()).affS((new Function_gen()).select(con,"Ordrenotaccepted"));
 		txt += (new Titre_vendu()).affS((new Function_gen()).select(con,"Titre_vendu"));
 		txt += (new Transaction()).affS((new Function_gen()).select(con,"Transaction"));
 		txt += (new Info_titre()).affS((new Function_gen()).select(con,"Info_titre"));
-		txt += (new Ordreaccepted()).affS((new Function_gen()).select(con,"Ordreaccepted"));
+		txt += (new Ordreconclu()).affS((new Function_gen()).select(con,"Ordreconclu"));
 		
 		con.close();
 		return txt;
 	}
 	public String maper() throws Exception {
 		Connection con = (new DBConnection()).getConnnection();
-		AcceptOrdre o = new AcceptOrdre();
+		Ordreconclu o = new Ordreconclu();
 		String map = (new Mapping()).createAllInClass(o);
 		con.close();
 		return map;
@@ -347,7 +345,12 @@ public class Function{
 		}
 	}
     public void check_after_insert(Object o,Connection con) throws Exception {
-    
+		if(o.getClass().getName().equals("donnee.Ordreconclu")){
+			Ordreconclu oc = (Ordreconclu)o;
+			if(check_conclud_2cotes(con, oc.getIdOrdre())){
+
+			}
+		}
 	}
 	public String lister_Brocker(String idBrocker) throws Exception {
 		Connection con = (new DBConnection()).getConnnection();
@@ -358,64 +361,7 @@ public class Function{
 		con.close();
 		return txt;
 	}
-	public String aConclure(String idBrocker) throws Exception {
-		Connection con = (new DBConnection()).getConnnection();
-		String res = aConclure(idBrocker,con);
-		con.close();
-		return res;
-	}
-	public String aConclure(String idBrocker,Connection con) throws Exception {
-		Object[] mes_ordre_A = (new Function_gen()).select(con,"Ordreaccepted","idBrocker",idBrocker,"type","0");
-		Object[] mes_ordre_V = (new Function_gen()).select(con,"Ordreaccepted","idBrocker",idBrocker,"type","1");
-		// Object[] ordre_autre = (new Function_gen()).selectnot(con, "Ordreaccepted", "IDBROCKER", idBrocker);
-		Object[] ordre_autre = (new Function_gen()).select(con, "Ordreaccepted");
-		String res = "";
 
-		res += "<table class=\"table table-bordered\">";
-			res += "<tr>";
-				res += "<th>vos achats</th>";
-				res += "<th>Proposition</th>";
-			res += "</tr>";
-			for(int i=0; i<mes_ordre_A.length; i++){
-				res += "<tr>";
-					Ordre o = (Ordre)mes_ordre_A[i];
-					res += "<td>"+o.getIdOrdre()+": vous voulez acheter "+o.getNbTitre()+" titre de la societe "+o.getIdSociete()+" appartenant au client "+o.getIdClient()+" prix unitaire= "+o.getPrixUnitaire()+" le "+o.getDates()+"</td>";
-					res += "<td>";
-						for(int j=0; j<ordre_autre.length; j++){
-							Ordre o_autre = (Ordre)ordre_autre[j];
-							if(o_autre.getIdSociete().equals(o.getIdSociete()) && o_autre.getType()!=o.getType()){
-								res += "<p>"+o_autre.getIdOrdre()+": "+o_autre.getIdBrocker()+" veut vendre "+o_autre.getNbTitre()+" titre de la societe "+o_autre.getIdSociete()+" appartenant au client "+o_autre.getIdClient()+" prix unitaire= "+o_autre.getPrixUnitaire()+" le "+o_autre.getDates()+"</p>";
-								res += "<p><a href=\"conclure_ordre.jsp?idOrdreProposition="+o_autre.getIdOrdre()+"&idMyOrdre="+o.getIdOrdre()+"\">conclure</a></p>";
-							}
-						}
-					res += "</td>";
-				res += "</tr>";
-			}
-		res += "</table>";
-
-		res += "<table class=\"table table-bordered\">";
-			res += "<tr>";
-				res += "<th>vos ventes</th>";
-				res += "<th>Proposition</th>";
-			res += "</tr>";
-			for(int i=0; i<mes_ordre_V.length; i++){
-				res += "<tr>";
-					Ordre o = (Ordre)mes_ordre_V[i];
-					res += "<td>"+o.getIdOrdre()+": vous voulez vendre "+o.getNbTitre()+" titre de la societe "+o.getIdSociete()+" appartenant au client "+o.getIdClient()+" prix unitaire= "+o.getPrixUnitaire()+" le "+o.getDates()+"</td>";
-					res += "<td>";
-						for(int j=0; j<ordre_autre.length; j++){
-							Ordre o_autre = (Ordre)ordre_autre[j];
-							if(o_autre.getIdSociete().equals(o.getIdSociete()) && o_autre.getType()!=o.getType()){
-								res += "<p>"+o_autre.getIdOrdre()+": "+o_autre.getIdBrocker()+" veut acheter "+o_autre.getNbTitre()+" titre de la societe "+o_autre.getIdSociete()+" appartenant au client "+o_autre.getIdClient()+" prix unitaire= "+o_autre.getPrixUnitaire()+" le "+o_autre.getDates()+"</p>";
-								res += "<p><a href=\"conclure_ordre.jsp?idOrdreProposition="+o_autre.getIdOrdre()+"&idMyOrdre="+o.getIdOrdre()+"\">conclure</a></p>";
-							}
-						}
-					res += "</td>";
-				res += "</tr>";
-			}
-		res += "</table>";
-		return res;
-	}
 	public void confirmOrdre(String idOrdre) throws Exception {
 		DBConnection dbh =  new DBConnection();
 		Connection con = dbh.getConnnection();
@@ -487,5 +433,181 @@ public class Function{
 			}
 		html += "</table>";
 		return html;
+	}
+	public String aConclure(String idBrocker) throws Exception {
+		Connection con = (new DBConnection()).getConnnection();
+		String res = aConclure(idBrocker,con);
+		con.close();
+		return res;
+	}
+	public String aConclure(String idBrocker,Connection con) throws Exception {
+		Object[] mes_ordre_A = (new Function_gen()).select(con,"Ordreaccepted","idBrocker",idBrocker,"type","0");
+		Object[] mes_ordre_V = (new Function_gen()).select(con,"Ordreaccepted","idBrocker",idBrocker,"type","1");
+		// Object[] ordre_autre = (new Function_gen()).selectnot(con, "Ordreaccepted", "IDBROCKER", idBrocker);
+		Object[] ordre_autre = (new Function_gen()).select(con, "Ordreaccepted");
+		String res = "";
+
+		res += "<table class=\"table table-bordered\">";
+			res += "<tr>";
+				res += "<th>vos achats</th>";
+				res += "<th>Proposition</th>";
+			res += "</tr>";
+			for(int i=0; i<mes_ordre_A.length; i++){
+				res += "<tr>";
+					Ordre o = (Ordre)mes_ordre_A[i];
+					res += "<td>"+o.getIdOrdre()+": vous voulez acheter "+o.getNbTitre()+" titre de la societe "+o.getIdSociete()+" appartenant au client "+o.getIdClient()+" prix unitaire= "+o.getPrixUnitaire()+" le "+o.getDates()+"</td>";
+					res += "<td>";
+						for(int j=0; j<ordre_autre.length; j++){
+							Ordre o_autre = (Ordre)ordre_autre[j];
+							if(o_autre.getIdSociete().equals(o.getIdSociete()) && o_autre.getType()!=o.getType()){
+								res += "<p>"+o_autre.getIdOrdre()+": "+o_autre.getIdBrocker()+" veut vendre "+o_autre.getNbTitre()+" titre de la societe "+o_autre.getIdSociete()+" appartenant au client "+o_autre.getIdClient()+" prix unitaire= "+o_autre.getPrixUnitaire()+" le "+o_autre.getDates()+"</p>";
+								if(check_conclu(con, o_autre.getIdOrdre(), o.getIdBrocker())){
+									res += "<p>conclue</p>";
+								}
+								else{
+									res += "<p><a href=\"conclure_ordre.jsp?idOrdreProposition="+o_autre.getIdOrdre()+"&idMyOrdre="+o.getIdOrdre()+"\">conclure</a></p>";
+								}
+
+							}
+						}
+					res += "</td>";
+				res += "</tr>";
+			}
+		res += "</table>";
+
+		res += "<table class=\"table table-bordered\">";
+			res += "<tr>";
+				res += "<th>vos ventes</th>";
+				res += "<th>Proposition</th>";
+			res += "</tr>";
+			for(int i=0; i<mes_ordre_V.length; i++){
+				res += "<tr>";
+					Ordre o = (Ordre)mes_ordre_V[i];
+					res += "<td>"+o.getIdOrdre()+": vous voulez vendre "+o.getNbTitre()+" titre de la societe "+o.getIdSociete()+" appartenant au client "+o.getIdClient()+" prix unitaire= "+o.getPrixUnitaire()+" le "+o.getDates()+"</td>";
+					res += "<td>";
+						for(int j=0; j<ordre_autre.length; j++){
+							Ordre o_autre = (Ordre)ordre_autre[j];
+							if(o_autre.getIdSociete().equals(o.getIdSociete()) && o_autre.getType()!=o.getType()){
+								res += "<p>"+o_autre.getIdOrdre()+": "+o_autre.getIdBrocker()+" veut acheter "+o_autre.getNbTitre()+" titre de la societe "+o_autre.getIdSociete()+" appartenant au client "+o_autre.getIdClient()+" prix unitaire= "+o_autre.getPrixUnitaire()+" le "+o_autre.getDates()+"</p>";
+								if(!check_conclu(con, o_autre.getIdOrdre(), o.getIdBrocker())){
+									res += "<p><a href=\"conclure_ordre.jsp?idOrdreProposition="+o_autre.getIdOrdre()+"&idMyOrdre="+o.getIdOrdre()+"\">conclure</a></p>";
+								}
+								else{
+									res += "<p>conclue</p>";								
+								}
+							}
+						}
+					res += "</td>";
+				res += "</tr>";
+			}
+		res += "</table>";
+		return res;
+	}
+	public void conclure(String idBrocker,String idOrdre) throws Exception {
+		Connection con = new DBConnection().getConnnection();
+		conclure(con, idBrocker, idOrdre);
+		con.close();
+	}
+
+	public void conclure(Connection con, String idBrocker,String idOrdre) throws Exception {
+		Ordreconclu oc = new Ordreconclu("concat('oc_',idOrdreconclu.nextVal)",idBrocker,idOrdre);
+		new Function_gen().insert(con, oc, "Ordreconclu");
+	}
+	public boolean check_conclu(Connection con, String idOrdre,String idBrocker) throws Exception {
+		Object[] objs = new Function_gen().select(con, "Ordreconclu", "idOrdre", idOrdre);
+		for(int i=0; i<objs.length; i++){
+			Ordreconclu oc = (Ordreconclu)objs[i];
+			if(oc.getIdBrocker().equals(idBrocker)){
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean check_conclud_2cotes(String idOrdre) throws Exception {
+		Connection con = new DBConnection().getConnnection();
+		boolean res = check_conclud_2cotes(con, idOrdre);
+		con.close();
+		return res;
+	}
+	public boolean check_conclud_2cotes(Connection con, String idOrdre) throws Exception {
+		Ordre o = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre);
+		Object[] objs = new Function_gen().select(con, "Ordreconclu", "idOrdre", idOrdre);
+		if( objs.length>1 ){
+			boolean test = false;
+			for(int i=0; i<objs.length; i++){
+			Ordreconclu oc = (Ordreconclu)objs[i];
+				if(oc.getIdBrocker().equals(o.getIdBrocker())){
+					test = true;
+				}
+			}
+			if(test){
+				System.out.println("efa ok");
+				return true;
+			}
+		}
+		System.out.println("mbola ts ok");
+		return false;
+	}
+	public Ordre getVente(Ordre x, Ordre y){
+		if(x.getType()==1){
+			return x;
+		}
+		return y;
+	}
+	public Ordre getAchat(Ordre x, Ordre y){
+		if(x.getType()==0){
+			return x;
+		}
+		return y;
+	}
+	public void transaction(String idOrdre,String idOrdre_a) throws Exception {
+		Connection con = new DBConnection().getConnnection();
+		con.setAutoCommit(false);
+		try {
+			transaction(con, idOrdre, idOrdre_a);
+			con.commit();
+		} catch (Exception e) {
+			con.rollback();
+			throw e;
+		}
+		finally{
+			con.close();
+		}
+	}
+
+	public void transaction(Connection con,String idOrdre,String idOrdre_a) throws Exception {
+		//ordre
+		Ordre o = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre);
+		//proposition
+			Ordre oa = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre_a);
+			Ordre achat = getAchat(o, oa);
+			Ordre vente = getVente(o, oa);
+		//mes titres dans la societe ou j'ai fait une vente
+			Object[] lestitres_info = new Function_gen().select(con, "Info_titre", "idProprietaire", vente.getIdClient(), "idSociete", vente.getIdSociete());
+		//parcouris ces titre(info)
+		for(int i=0; i<lestitres_info.length; i++){
+			Info_titre it = (Info_titre)lestitres_info[i];
+			Titre_vendu tv = (Titre_vendu)new Function_gen().selectbyId(con, "Titre_vendu", "idTitre", it.getIdTitre());
+			if(i<vente.getNbTitre()){
+				//changer de proprio
+				tv.updateProprio(con,achat.getIdClient());
+			}
+		}
+		Client acheteur = (Client)(new Function_gen()).selectbyId(con, "Client", "idClient", achat.getIdClient());
+		Client vendeur = (Client)(new Function_gen()).selectbyId(con, "Client", "idClient", vente.getIdClient());
+		Brocker acheteur_b = (Brocker)(new Function_gen()).selectbyId(con, "Brocker", "idBrocker", achat.getIdBrocker());
+		Brocker vendeur_b = (Brocker)(new Function_gen()).selectbyId(con, "Brocker", "idBrocker", vente.getIdBrocker());
+		float prix = vente.getPrixUnitaire()*vente.getNbTitre();
+
+		vendeur.setArgent(vendeur.getArgent()+prix-(prix*vendeur_b.getPourcentage()/100));
+		acheteur.setArgent(acheteur.getArgent()-prix+(prix*acheteur_b.getPourcentage()/100));
+		(new Function_gen()).update(con, vendeur, "Client","idClient",vendeur.getIdClient());
+		(new Function_gen()).update(con, acheteur, "Client", "idClient",acheteur.getIdClient());
+
+		vendeur_b.setArgent(vendeur_b.getArgent()+prix*vendeur_b.getPourcentage()/100);
+		acheteur_b.setArgent(acheteur_b.getArgent()+prix*acheteur_b.getPourcentage()/100);
+		(new Function_gen()).update(con, vendeur_b, "Brocker","idBrocker",vendeur_b.getIdBrocker());
+		(new Function_gen()).update(con, acheteur_b, "Brocker", "idBrocker",acheteur_b.getIdBrocker());
+		Transaction transac = new Transaction("conct('tr_',idTransaction.nextVal)", vente.getDates(), vente.getIdOrdre(), achat.getIdOrdre(), prix*vendeur_b.getPourcentage()/100, prix*acheteur_b.getPourcentage()/100);
 	}
 }
