@@ -421,7 +421,8 @@ public class Function_gen{
                 Method m = c.getMethod(nf);
                 String val = m.invoke(obj).toString();
                 if(fs[i].getType() == val.getClass()){
-                    if(val.indexOf(".next")==-1){
+                    // if(val.indexOf(".next")==-1){
+					if(val.indexOf(".next")==-1 && val.indexOf(".currVal")==-1){
                         val = "'"+val+"'";
                     }
 				}

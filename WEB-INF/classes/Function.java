@@ -87,7 +87,7 @@ public class Function{
 		txt += (new Titre_vendu()).affS((new Function_gen()).select(con,"Titre_vendu"));
 		txt += (new Transaction()).affS((new Function_gen()).select(con,"Transaction"));
 		txt += (new Info_titre()).affS((new Function_gen()).select(con,"Info_titre"));
-		txt += (new Ordreconclu()).affS((new Function_gen()).select(con,"Ordreconclu"));
+		// txt += (new Ordreconclu()).affS((new Function_gen()).select(con,"Ordreconclu"));
 		
 		con.close();
 		return txt;
@@ -347,9 +347,9 @@ public class Function{
     public void check_after_insert(Object o,Connection con) throws Exception {
 		if(o.getClass().getName().equals("donnee.Ordreconclu")){
 			Ordreconclu oc = (Ordreconclu)o;
-			if(check_conclud_2cotes(con, oc.getIdOrdre())){
+			// if(check_conclud_2cotes(con, oc.getIdOrdre())){
 
-			}
+			//}
 		}
 	}
 	public String lister_Brocker(String idBrocker) throws Exception {
@@ -503,49 +503,62 @@ public class Function{
 		res += "</table>";
 		return res;
 	}
-	public void conclure(String idBrocker,String idOrdre) throws Exception {
+	public void conclure(String idBrocker,String idOrdre0, String idOrdre1) throws Exception {
 		Connection con = new DBConnection().getConnnection();
-		conclure(con, idBrocker, idOrdre);
+		conclure(con, idBrocker, idOrdre0,idOrdre1);
 		con.close();
 	}
 
-	public void conclure(Connection con, String idBrocker,String idOrdre) throws Exception {
-		Ordreconclu oc = new Ordreconclu("concat('oc_',idOrdreconclu.nextVal)",idBrocker,idOrdre);
+	public void conclure(Connection con, String idBrocker,String idOrdre0, String idOrdre1) throws Exception {
+		Ordreconclu oc = new Ordreconclu("concat('oc_',idOrdreconclu.nextVal)",idBrocker,idOrdre0,idOrdre1);
 		new Function_gen().insert(con, oc, "Ordreconclu");
 	}
 	public boolean check_conclu(Connection con, String idOrdre,String idBrocker) throws Exception {
-		Object[] objs = new Function_gen().select(con, "Ordreconclu", "idOrdre", idOrdre);
+		Object[] objs = new Function_gen().select(con, "Ordreconclu", "idOrdre0", idOrdre);
+		Object[] objss = new Function_gen().select(con, "Ordreconclu", "idOrdre1", idOrdre);
 		for(int i=0; i<objs.length; i++){
 			Ordreconclu oc = (Ordreconclu)objs[i];
 			if(oc.getIdBrocker().equals(idBrocker)){
 				return true;
 			}
 		}
-		return false;
-	}
-	public boolean check_conclud_2cotes(String idOrdre) throws Exception {
-		Connection con = new DBConnection().getConnnection();
-		boolean res = check_conclud_2cotes(con, idOrdre);
-		con.close();
-		return res;
-	}
-	public boolean check_conclud_2cotes(Connection con, String idOrdre) throws Exception {
-		Ordre o = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre);
-		Object[] objs = new Function_gen().select(con, "Ordreconclu", "idOrdre", idOrdre);
-		if( objs.length>1 ){
-			boolean test = false;
-			for(int i=0; i<objs.length; i++){
-			Ordreconclu oc = (Ordreconclu)objs[i];
-				if(oc.getIdBrocker().equals(o.getIdBrocker())){
-					test = true;
-				}
-			}
-			if(test){
-				System.out.println("efa ok");
+		for(int i=0; i<objss.length; i++){
+			Ordreconclu oc = (Ordreconclu)objss[i];
+			if(oc.getIdBrocker().equals(idBrocker)){
 				return true;
 			}
 		}
-		System.out.println("mbola ts ok");
+		return false;
+	}
+	public boolean check_conclud_2cotes(String idOrdre0,String idOrdre1) throws Exception {
+		Connection con = new DBConnection().getConnnection();
+		boolean res = check_conclud_2cotes(con, idOrdre0,idOrdre1);
+		con.close();
+		return res;
+	}
+	public boolean check_conclud_2cotes(Connection con, String idOrdre0,String idOrdre1) throws Exception {
+		Ordreconclu o = (Ordreconclu)new Function_gen().selectbyId(con, "Ordreconclu", "idOrdre0", idOrdre0);
+		// System.out.println(o.aff());
+		Ordreconclu o1 = (Ordreconclu)new Function_gen().selectbyId(con, "Ordreconclu", "idOrdre0", idOrdre1);
+		// System.out.println(o1.aff());
+
+		if(o!=null && o1!=null && o.getIdOrdre1().equals(idOrdre1) && o1.getIdOrdre1().equals(idOrdre0)){
+			return true;
+		}
+		// if( objs.length>1 ){
+		// 	boolean test = false;
+		// 	for(int i=0; i<objs.length; i++){
+		// 	Ordreconclu oc = (Ordreconclu)objs[i];
+		// 		if(oc.getIdBrocker().equals(o.getIdBrocker())){
+		// 			test = true;
+		// 		}
+		// 	}
+		// 	if(test){
+		// 		System.out.println("efa ok");
+		// 		return true;
+		// 	}
+		// }
+		// System.out.println("mbola ts ok");
 		return false;
 	}
 	public Ordre getVente(Ordre x, Ordre y){
@@ -599,15 +612,31 @@ public class Function{
 		Brocker vendeur_b = (Brocker)(new Function_gen()).selectbyId(con, "Brocker", "idBrocker", vente.getIdBrocker());
 		float prix = vente.getPrixUnitaire()*vente.getNbTitre();
 
-		vendeur.setArgent(vendeur.getArgent()+prix-(prix*vendeur_b.getPourcentage()/100));
-		acheteur.setArgent(acheteur.getArgent()-prix+(prix*acheteur_b.getPourcentage()/100));
-		(new Function_gen()).update(con, vendeur, "Client","idClient",vendeur.getIdClient());
-		(new Function_gen()).update(con, acheteur, "Client", "idClient",acheteur.getIdClient());
+		// vendeur.setArgent(vendeur.getArgent()+prix-(prix*vendeur_b.getPourcentage()/100));
+		// acheteur.setArgent(acheteur.getArgent()-prix+(prix*acheteur_b.getPourcentage()/100));
+		// (new Function_gen()).update(con, vendeur, "Client","idClient",vendeur.getIdClient());
+		// (new Function_gen()).update(con, acheteur, "Client", "idClient",acheteur.getIdClient());
 
-		vendeur_b.setArgent(vendeur_b.getArgent()+prix*vendeur_b.getPourcentage()/100);
-		acheteur_b.setArgent(acheteur_b.getArgent()+prix*acheteur_b.getPourcentage()/100);
-		(new Function_gen()).update(con, vendeur_b, "Brocker","idBrocker",vendeur_b.getIdBrocker());
-		(new Function_gen()).update(con, acheteur_b, "Brocker", "idBrocker",acheteur_b.getIdBrocker());
-		Transaction transac = new Transaction("conct('tr_',idTransaction.nextVal)", vente.getDates(), vente.getIdOrdre(), achat.getIdOrdre(), prix*vendeur_b.getPourcentage()/100, prix*acheteur_b.getPourcentage()/100);
+		// vendeur_b.setArgent(vendeur_b.getArgent()+prix*vendeur_b.getPourcentage()/100);
+		// acheteur_b.setArgent(acheteur_b.getArgent()+prix*acheteur_b.getPourcentage()/100);
+		// (new Function_gen()).update(con, vendeur_b, "Brocker","idBrocker",vendeur_b.getIdBrocker());
+		// (new Function_gen()).update(con, acheteur_b, "Brocker", "idBrocker",acheteur_b.getIdBrocker());
+		Transaction transac = new Transaction("concat('tr_',idTransaction.nextVal)", vente.getDates(), vente.getIdOrdre(), achat.getIdOrdre(), prix*vendeur_b.getPourcentage()/100, prix*acheteur_b.getPourcentage()/100);
+		new Function_gen().insert(con, transac, "Transaction");
+
+		//gestion des restes de ordre
+
+		if(achat.getNbTitre()>vente.getNbTitre()){
+			int nb = achat.getNbTitre()-vente.getNbTitre();
+			achat.setNbTitre(nb);
+			new Function_gen().insert(con, achat, "Ordre");
+			// conclure(con, achat.getIdBrocker(), "concat('o_',idOrdre.currVal)");
+		}
+		if(achat.getNbTitre()<vente.getNbTitre()){
+			int nb = -achat.getNbTitre()+vente.getNbTitre();
+			vente.setNbTitre(nb);
+			new Function_gen().insert(con, vente, "Ordre");
+			// conclure(con, vente.getIdBrocker(), "concat('o_',idOrdre.currVal)");
+		}
 	}
 }

@@ -101,11 +101,13 @@ CREATE TABLE acceptOrdre(
 
 create SEQUENCE idAcceptOrdre;
 
--- CREATE view ordreaccepted as 
-select * from ordre where idordre in (select idordre from acceptOrdre);
+Drop view ordreaccepted ;
+CREATE view ordreaccepted as 
+select * from ordre where idordre in (select idordre from acceptOrdre) and idOrdre not in (select idOrdreVente from transaction) and idOrdre not in (select idOrdreAchat from transaction) ;
 
--- CREATE view ordrenotaccepted as 
-select * from ordre where idordre not in (select idordre from acceptOrdre);
+DROP view ordrenotaccepted ;
+CREATE view ordrenotaccepted as 
+select * from ordre where idordre not in (select idordre from acceptOrdre)  and idOrdre not in (select idOrdreVente from transaction) and idOrdre not in (select idOrdreAchat from transaction) ;
 
 -- create view info_titre as
 select Titre_vendu.idTitre_vendu idTitre_vendu,Titre_vendu.idTitre idTitre,Titre_vendu.idProprietaire idProprietaire,Titre.prix prix,Societe.idSociete idSociete, Societe.nom nomSociete,Societe.nbTitre nbTitre
@@ -117,9 +119,11 @@ DROP table ordreconclu;
 create table ordreconclu(
     idOrdreconclu VARCHAR(10) PRIMARY KEY,
     idBrocker VARCHAR(10),
-    idOrdre VARCHAR(10),
+    idOrdre0 VARCHAR(10),
+    idOrdre1 VARCHAR(10),
     FOREIGN KEY (idBrocker) REFERENCES Brocker(idBrocker),
-    FOREIGN KEY (idOrdre) REFERENCES Ordre(idOrdre)
+    FOREIGN KEY (idOrdre0) REFERENCES Ordre(idOrdre),
+    FOREIGN KEY (idOrdre1) REFERENCES Ordre(idOrdre)
 );
 
 drop sequence idOrdreconclu;
