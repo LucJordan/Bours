@@ -5,6 +5,7 @@
 
 -- sqlplus bours/bours
 
+DROP table ordreconclu;
 create SEQUENCE idAcceptOrdre;
 Drop TABLE acceptOrdre;
 drop table transaction;
@@ -34,7 +35,9 @@ create table brocker(
     idBrocker varchar(10) primary key not null,
     nom varchar(20),
     pourcentage integer,
-    argent decimal
+    argent decimal,
+    delai_payement SMALLINT,
+	pourcentage_penalisation DECIMAL
 );
 create sequence idBrocker;
 
@@ -91,6 +94,7 @@ create table transaction (
     foreign key (idOrdreAchat) references ordre(idOrdre)
 );
 
+drop sequence idTransaction;
 create sequence idTransaction;
 
 CREATE TABLE acceptOrdre(
@@ -99,22 +103,21 @@ CREATE TABLE acceptOrdre(
     FOREIGN KEY (idOrdre) REFERENCES Ordre(idOrdre)
 );
 
+drop SEQUENCE idAcceptOrdre;
 create SEQUENCE idAcceptOrdre;
 
-Drop view ordreaccepted ;
-CREATE view ordreaccepted as 
-select * from ordre where idordre in (select idordre from acceptOrdre) and idOrdre not in (select idOrdreVente from transaction) and idOrdre not in (select idOrdreAchat from transaction) ;
+-- Drop view ordreaccepted ;
+-- CREATE view ordreaccepted as 
+-- select * from ordre where idordre in (select idordre from acceptOrdre) and idOrdre not in (select idOrdreVente from transaction) and idOrdre not in (select idOrdreAchat from transaction) ;
 
-DROP view ordrenotaccepted ;
-CREATE view ordrenotaccepted as 
-select * from ordre where idordre not in (select idordre from acceptOrdre)  and idOrdre not in (select idOrdreVente from transaction) and idOrdre not in (select idOrdreAchat from transaction) ;
+-- DROP view ordrenotaccepted ;
+-- CREATE view ordrenotaccepted as 
+-- select * from ordre where idordre not in (select idordre from acceptOrdre)  and idOrdre not in (select idOrdreVente from transaction) and idOrdre not in (select idOrdreAchat from transaction) ;
 
 -- create view info_titre as
-select Titre_vendu.idTitre_vendu idTitre_vendu,Titre_vendu.idTitre idTitre,Titre_vendu.idProprietaire idProprietaire,Titre.prix prix,Societe.idSociete idSociete, Societe.nom nomSociete,Societe.nbTitre nbTitre
-from Titre_vendu,Titre,Societe
-where Titre_vendu.idTitre = Titre.idTitre and Titre.idSociete = Societe.idSociete
-
-DROP table ordreconclu;
+-- select Titre_vendu.idTitre_vendu idTitre_vendu,Titre_vendu.idTitre idTitre,Titre_vendu.idProprietaire idProprietaire,Titre.prix prix,Societe.idSociete idSociete, Societe.nom nomSociete,Societe.nbTitre nbTitre
+-- from Titre_vendu,Titre,Societe
+-- where Titre_vendu.idTitre = Titre.idTitre and Titre.idSociete = Societe.idSociete
 
 create table ordreconclu(
     idOrdreconclu VARCHAR(10) PRIMARY KEY,
@@ -129,3 +132,13 @@ create table ordreconclu(
 drop sequence idOrdreconclu;
 
 create sequence idOrdreconclu;
+
+create table payement_brocker(
+    idPayement_brocker VARCHAR(10) PRIMARY KEY,
+    idClient VARCHAR(10),
+    idBrocker VARCHAR(10),
+    argent decimal,--negatif pour le brocker , positif pour le client
+    date_payement date,
+    FOREIGN KEY (idClient) REFERENCES Client(idClient),
+    FOREIGN KEY (idBrocker) REFERENCES Brocker(idBrocker)
+);

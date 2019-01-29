@@ -94,7 +94,7 @@ public class Function{
 	}
 	public String maper() throws Exception {
 		Connection con = (new DBConnection()).getConnnection();
-		Ordreconclu o = new Ordreconclu();
+		Payement_brocker o = new Payement_brocker();
 		String map = (new Mapping()).createAllInClass(o);
 		con.close();
 		return map;
