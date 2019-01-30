@@ -133,12 +133,18 @@ drop sequence idOrdreconclu;
 
 create sequence idOrdreconclu;
 
+drop table payement_brocker;
 create table payement_brocker(
     idPayement_brocker VARCHAR(10) PRIMARY KEY,
     idClient VARCHAR(10),
     idBrocker VARCHAR(10),
+    idOrdre VARCHAR(10),
     argent decimal,--negatif pour le brocker , positif pour le client
     date_payement date,
     FOREIGN KEY (idClient) REFERENCES Client(idClient),
+    FOREIGN KEY (idOrdre) REFERENCES Ordre(idOrdre),
     FOREIGN KEY (idBrocker) REFERENCES Brocker(idBrocker)
 );
+
+drop SEQUENCE idPayement_brocker;
+CREATE SEQUENCE idPayement_brocker;

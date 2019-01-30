@@ -49,6 +49,7 @@ public class Function{
         txt += "<p><a href=\"index.jsp\">Accueil</a></p>";
 		txt += "<p><a href=\"form_ordre.jsp?type=0\">acheter</a></p>";
 		txt += "<p><a href=\"form_ordre.jsp?type=1\">vendre</a></p>";
+		txt += "<p><a href=\"pay_brocker.jsp\">payer un brocker</a></p>";
 		txt += "<p><a href=\"deco.jsp\">deconnection</a></p>";
         txt += "<p><a href=\"cotation.jsp\">Tableau de cotation</a></p>";
         return txt;
@@ -87,7 +88,7 @@ public class Function{
 		txt += (new Titre_vendu()).affS((new Function_gen()).select(con,"Titre_vendu"));
 		txt += (new Transaction()).affS((new Function_gen()).select(con,"Transaction"));
 		txt += (new Info_titre()).affS((new Function_gen()).select(con,"Info_titre"));
-		// txt += (new Ordreconclu()).affS((new Function_gen()).select(con,"Ordreconclu"));
+		txt += (new Payement_brocker()).affS((new Function_gen()).select(con,"Payement_brocker"));
 		
 		con.close();
 		return txt;
@@ -624,6 +625,14 @@ public class Function{
 		Transaction transac = new Transaction("concat('tr_',idTransaction.nextVal)", vente.getDates(), vente.getIdOrdre(), achat.getIdOrdre(), prix*vendeur_b.getPourcentage()/100, prix*acheteur_b.getPourcentage()/100);
 		new Function_gen().insert(con, transac, "Transaction");
 
+		// payement bocker
+
+		Payement_brocker p_bv = new Payement_brocker("concat('pb_',idPayement_brocker.nextVal)", vendeur.getIdClient(), vendeur_b.getIdBrocker(),vente.getIdOrdre(), (-1)*prix*vendeur_b.getPourcentage()/100, vente.getDates());
+		new Function_gen().insert(con, p_bv, "Payement_brocker");
+
+		Payement_brocker p_ba = new Payement_brocker("concat('pb_',idPayement_brocker.nextVal)", acheteur.getIdClient(), acheteur_b.getIdBrocker(),achat.getIdOrdre(), (-1)*prix*acheteur_b.getPourcentage()/100, vente.getDates());
+		new Function_gen().insert(con, p_ba, "Payement_brocker");
+
 		//gestion des restes de ordre
 
 		if(achat.getNbTitre()>vente.getNbTitre()){
@@ -638,5 +647,18 @@ public class Function{
 			new Function_gen().insert(con, vente, "Ordre");
 			// conclure(con, vente.getIdBrocker(), "concat('o_',idOrdre.currVal)");
 		}
+	}
+	public String formuler_pay_brocker() throws Exception {
+		Connection con = (new DBConnection()).getConnnection();
+		String html = "";
+
+		Formulaire f_Payement_brocker = new Formulaire();
+		f_Payement_brocker.init(new Payement_brocker());
+		f_Payement_brocker.getChamp("idPayement_brocker").setDefault("concat('pb_',idPayement_brocker.nextVal)");
+		f_Payement_brocker.getChamp("idPayement_brocker").setVisible(false);
+		html += f_Payement_brocker.getHTML(new Payement_brocker(),con);
+		con.close();
+		
+		return html;
 	}
 }
