@@ -591,7 +591,7 @@ public class Function{
 
 	public void transaction(Connection con,String idOrdre,String idOrdre_a) throws Exception {
 		//ordre
-		Ordre o = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre);
+			Ordre o = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre);
 		//proposition
 			Ordre oa = (Ordre)new Function_gen().selectbyId(con, "Ordre", "idOrdre", idOrdre_a);
 			Ordre achat = getAchat(o, oa);
@@ -607,21 +607,19 @@ public class Function{
 				tv.updateProprio(con,achat.getIdClient());
 			}
 		}
+		//reccupération des data
 		Client acheteur = (Client)(new Function_gen()).selectbyId(con, "Client", "idClient", achat.getIdClient());
 		Client vendeur = (Client)(new Function_gen()).selectbyId(con, "Client", "idClient", vente.getIdClient());
 		Brocker acheteur_b = (Brocker)(new Function_gen()).selectbyId(con, "Brocker", "idBrocker", achat.getIdBrocker());
 		Brocker vendeur_b = (Brocker)(new Function_gen()).selectbyId(con, "Brocker", "idBrocker", vente.getIdBrocker());
 		float prix = vente.getPrixUnitaire()*vente.getNbTitre();
 
-		// vendeur.setArgent(vendeur.getArgent()+prix-(prix*vendeur_b.getPourcentage()/100));
-		// acheteur.setArgent(acheteur.getArgent()-prix+(prix*acheteur_b.getPourcentage()/100));
-		// (new Function_gen()).update(con, vendeur, "Client","idClient",vendeur.getIdClient());
-		// (new Function_gen()).update(con, acheteur, "Client", "idClient",acheteur.getIdClient());
+		//acheteur et vendeur , acheteur-- vendeur++
+		vendeur.setArgent(vendeur.getArgent()+prix);
+		acheteur.setArgent(acheteur.getArgent()-prix);
+		(new Function_gen()).update(con, vendeur, "Client","idClient",vendeur.getIdClient());
+		(new Function_gen()).update(con, acheteur, "Client", "idClient",acheteur.getIdClient());
 
-		// vendeur_b.setArgent(vendeur_b.getArgent()+prix*vendeur_b.getPourcentage()/100);
-		// acheteur_b.setArgent(acheteur_b.getArgent()+prix*acheteur_b.getPourcentage()/100);
-		// (new Function_gen()).update(con, vendeur_b, "Brocker","idBrocker",vendeur_b.getIdBrocker());
-		// (new Function_gen()).update(con, acheteur_b, "Brocker", "idBrocker",acheteur_b.getIdBrocker());
 		Transaction transac = new Transaction("concat('tr_',idTransaction.nextVal)", vente.getDates(), vente.getIdOrdre(), achat.getIdOrdre(), prix*vendeur_b.getPourcentage()/100, prix*acheteur_b.getPourcentage()/100);
 		new Function_gen().insert(con, transac, "Transaction");
 

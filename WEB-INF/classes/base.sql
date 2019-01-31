@@ -148,3 +148,17 @@ create table payement_brocker(
 
 drop SEQUENCE idPayement_brocker;
 CREATE SEQUENCE idPayement_brocker;
+
+---------reinitialiser
+delete from transaction;
+drop sequence idtransaction;
+create sequence idtransaction;
+delete from ordreconclu;
+drop sequence idOrdreconclu;
+create sequence idOrdreconclu;
+delete from payement_brocker;
+drop sequence idpayement_brocker;
+create sequence idpayement_brocker;
+update client set argent=10000 where idclient='cl_1';
+update client set argent=10000 where idclient='cl_2';
+commit;

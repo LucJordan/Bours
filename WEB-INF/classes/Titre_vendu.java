@@ -114,7 +114,8 @@ this.idProprietaire = idProprietaire;
 
 }
 public void updateProprio(Connection con,String idproprio) throws Exception {
-    new Function_gen().update(con, this,"Titre_vendu","idProprietaire,idTitre_vendu",idproprio+","+getIdTitre_vendu());
+    setIdProprietaire(idproprio);
+    new Function_gen().update(con, this,"Titre_vendu","idTitre_vendu",getIdTitre_vendu());
     System.out.println("_____proprietaire de titre changee_____");
 }
 }
