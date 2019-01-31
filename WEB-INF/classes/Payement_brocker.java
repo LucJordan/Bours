@@ -7,20 +7,17 @@ public class Payement_brocker{
     String idPayement_brocker;
     String idClient;
     String idBrocker;
-    String idOrdre;
     float argent ;//negatif pour le brocker , positif pour le client
     Date date_payement ;
     public Payement_brocker () {}
 
-    public Payement_brocker ( String idPayement_brocker, String idClient, String idBrocker, String idOrdre, float argent, Date date_payement) {
+    public Payement_brocker ( String idPayement_brocker, String idClient, String idBrocker, float argent, Date date_payement) {
     
     setIdPayement_brocker(idPayement_brocker) ;
     
     setIdClient(idClient) ;
     
     setIdBrocker(idBrocker) ;
-    
-    setIdOrdre(idOrdre) ;
     
     setArgent(argent) ;
     
@@ -37,8 +34,6 @@ public class Payement_brocker{
     res += " IdClient: "+getIdClient()+ " ---" ;
     
     res += " IdBrocker: "+getIdBrocker()+ " ---" ;
-    
-    res += " IdOrdre: "+getIdOrdre()+ " ---" ;
     
     res += " Argent: "+getArgent()+ " ---" ;
     
@@ -68,8 +63,6 @@ public class Payement_brocker{
     
     res +=" <th>idBrocker</th>";
     
-    res +=" <th>idOrdre</th>";
-    
     res +=" <th>argent</th>";
     
     res +=" <th>date_payement</th>";
@@ -87,8 +80,6 @@ public class Payement_brocker{
     res += "<td>"+x.getIdClient()+"</td>";
     
     res += "<td>"+x.getIdBrocker()+"</td>";
-    
-    res += "<td>"+x.getIdOrdre()+"</td>";
     
     res += "<td>"+x.getArgent()+"</td>";
     
@@ -137,18 +128,6 @@ public class Payement_brocker{
     public void setIdBrocker(String idBrocker) {
     
     this.idBrocker = idBrocker;
-    
-    }
-    
-    public String getIdOrdre() {
-    
-    return this.idOrdre;
-    
-    }
-    
-    public void setIdOrdre(String idOrdre) {
-    
-    this.idOrdre = idOrdre;
     
     }
     

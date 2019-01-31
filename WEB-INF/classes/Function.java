@@ -625,10 +625,10 @@ public class Function{
 
 		// payement bocker
 
-		Payement_brocker p_bv = new Payement_brocker("concat('pb_',idPayement_brocker.nextVal)", vendeur.getIdClient(), vendeur_b.getIdBrocker(),vente.getIdOrdre(), (-1)*prix*vendeur_b.getPourcentage()/100, vente.getDates());
+		Payement_brocker p_bv = new Payement_brocker("concat('pb_',idPayement_brocker.nextVal)", vendeur.getIdClient(), vendeur_b.getIdBrocker(), (-1)*prix*vendeur_b.getPourcentage()/100, vente.getDates());
 		new Function_gen().insert(con, p_bv, "Payement_brocker");
 
-		Payement_brocker p_ba = new Payement_brocker("concat('pb_',idPayement_brocker.nextVal)", acheteur.getIdClient(), acheteur_b.getIdBrocker(),achat.getIdOrdre(), (-1)*prix*acheteur_b.getPourcentage()/100, vente.getDates());
+		Payement_brocker p_ba = new Payement_brocker("concat('pb_',idPayement_brocker.nextVal)", acheteur.getIdClient(), acheteur_b.getIdBrocker(), (-1)*prix*acheteur_b.getPourcentage()/100, vente.getDates());
 		new Function_gen().insert(con, p_ba, "Payement_brocker");
 
 		//gestion des restes de ordre
@@ -636,14 +636,18 @@ public class Function{
 		if(achat.getNbTitre()>vente.getNbTitre()){
 			int nb = achat.getNbTitre()-vente.getNbTitre();
 			achat.setNbTitre(nb);
+			achat.setIdOrdre("concat(o_,idOrdre.nextVal)");
 			new Function_gen().insert(con, achat, "Ordre");
-			// conclure(con, achat.getIdBrocker(), "concat('o_',idOrdre.currVal)");
+			// accepter
+			confirmOrdre(achat.getIdOrdre());
 		}
 		if(achat.getNbTitre()<vente.getNbTitre()){
 			int nb = -achat.getNbTitre()+vente.getNbTitre();
 			vente.setNbTitre(nb);
+			vente.setIdOrdre("concat(o_,idOrdre.nextVal)");
 			new Function_gen().insert(con, vente, "Ordre");
-			// conclure(con, vente.getIdBrocker(), "concat('o_',idOrdre.currVal)");
+			// accepter
+			confirmOrdre(vente.getIdOrdre());
 		}
 	}
 	public String formuler_pay_brocker() throws Exception {
